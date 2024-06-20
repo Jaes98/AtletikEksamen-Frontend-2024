@@ -1,17 +1,23 @@
-import { Routes, Route } from "react-router-dom";
-import NavHeader from "./NavHeader";
-import ParticipantPage from "./components/ParticipantPage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ParticipantPage from "./pages/ParticipantPage";
+import ResultPage from "./pages/ResultPage";
+import { ToastContainer } from "react-toastify";
+import Layout from "./components/Layout";
 
 function App() {
-
   return (
     <div>
-      <NavHeader />
-      <Routes>
-        <Route path="/" element={<ParticipantPage />} />
-        <Route path="/participants" element={<ParticipantPage />} />
-        <Route path="/*" element={<h1>404 - Page Not Found</h1>} />
-      </Routes>
+      <ToastContainer />
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<ParticipantPage />} />
+            <Route path="/participants" element={<ParticipantPage />} />
+            <Route path="/results" element={<ResultPage />} />
+            <Route path="/*" element={<h1>404 - Page Not Found</h1>} />
+          </Routes>
+        </Layout>
+      </Router>
     </div>
   );
 }

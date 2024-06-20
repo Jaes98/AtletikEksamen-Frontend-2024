@@ -1,5 +1,5 @@
 interface Participant {
-  id: number;
+  id?: number;
   name: string;
   gender: string;
   age: number;
@@ -9,7 +9,7 @@ interface Participant {
 }
 
 interface Results {
-    id: number;
+    id?: number;
     resultType: string;
     date: string;
     resultValue: number;
@@ -18,9 +18,19 @@ interface Results {
 }
 
 interface Discipline {
-    id: number;
+    id?: number;
     name: string;
     resultType: string;
 }
+
+export const defaultParticipant = {
+  id: 0,
+  name: "",
+  age: 0,
+  gender: "",
+  club: "",
+  results: [],
+  disciplines: []
+} as Participant;
 
 export type { Participant, Results, Discipline};

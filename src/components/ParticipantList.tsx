@@ -31,9 +31,9 @@ export default function ParticipantList({ participants, setParticipants, onEdit 
     };
     
   return (
-    <div className="product-list-page">
-      <h2 className="product-header">Products</h2>
-      <table className="product-table">
+    <div className="participants-list-page">
+      <h2 className="participants-header">Participants</h2>
+      <table className="participants-table">
         <thead>
           <tr>
             <th>Name</th>
