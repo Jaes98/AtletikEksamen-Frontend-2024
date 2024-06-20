@@ -9,11 +9,8 @@ interface ResultListProps {
   onEdit: (result: Results) => void;
 }
 
-export default function ResultList({
-  results,
-  setResults,
-  onEdit,
-}: ResultListProps) {
+export default function ResultList({ results, setResults, onEdit, }: ResultListProps) {
+
   const handleDelete = async (id: number | undefined) => {
     if (id === undefined) {
       console.error("Cannot delete result: id is undefined");

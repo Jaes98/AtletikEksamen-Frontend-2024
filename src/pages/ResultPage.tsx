@@ -1,13 +1,25 @@
 import ResultList from "../components/ResultList";
 import Resultform from "../components/ResultForm";
-import { getResults } from "../services/apiFacade";
+import { getResults, getDisciplines, getParticipants } from "../services/apiFacade";
 import { useEffect, useState } from "react";
-import { Results } from "../Interfaces";
+import { Results, Participant, Discipline } from "../Interfaces";
 
 
 export default function ResultPage() {
     const [results, setResults] = useState<Results[]>([]);
     const [selectedResult, setSelectedResult] = useState<Results | null>(null);
+    const [participants, setParticipants] = useState<Participant[]>([]);
+    const [disciplines, setDisciplines] = useState<Discipline[]>([]);
+
+    const fetchParticipants = async () => {
+      const participantsList = await getParticipants();
+      setParticipants(participantsList);
+    };
+
+    const fetchDisciplines = async () => {
+      const disciplinesList = await getDisciplines();
+      setDisciplines(disciplinesList);
+    };
 
     const fetchResults = async () => {
       const resultsList = await getResults();
@@ -16,12 +28,14 @@ export default function ResultPage() {
 
     useEffect(() => {
       fetchResults();
+      fetchParticipants();
+      fetchDisciplines();
     }, []);
 
-    const handleResultSubmit = () => {
-      setSelectedResult(null);
-      fetchResults();
-    };
+    // const handleResultSubmit = () => {
+    //   setSelectedResult(null);
+    //   fetchResults();
+    // };
 
     const handleResultEdit = (result: Results) => {
       setSelectedResult(result);
@@ -38,12 +52,17 @@ export default function ResultPage() {
           justifyContent: "space-evenly",
         }}
       >
+        <Resultform
+        // onSubmit={handleResultSubmit} 
+        participants={participants} 
+        // results={selectedResult}
+        disciplines={disciplines} />
+
         <ResultList
           results={results}
           setResults={setResults}
           onEdit={handleResultEdit}
         />
-        <Resultform />
       </div>
     );
 };

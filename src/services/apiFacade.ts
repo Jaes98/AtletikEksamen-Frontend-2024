@@ -31,7 +31,7 @@ async function getResults(): Promise<Array<Results>> {
     return fetch(API_URL + "/results").then(handleHttpErrors);
     }
 
-async function createResult(result: Results) {
+async function registerResult(result: Results) {
     const options = makeOptions("POST", result);
     return fetch(API_URL + "/results", options).then(handleHttpErrors);
     }
@@ -82,4 +82,4 @@ async function handleHttpErrors(res: Response) {
   return res.json();
 }
 
-export { getParticipants, createParticipant, deleteParticipant, updateParticipant, getParticipantById, getResults, createResult, deleteResult, createMultipleResults, updateResult, getDisciplines};
+export { getParticipants, createParticipant, deleteParticipant, updateParticipant, getParticipantById, getResults, registerResult, deleteResult, createMultipleResults, updateResult, getDisciplines};

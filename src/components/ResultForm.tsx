@@ -1,181 +1,168 @@
-import { useState, useEffect } from "react";
-import { Participant, Discipline, Results } from "../Interfaces"; // Assuming Interfaces are defined
-import {
-  registerResult,
-  updateResult,
-  deleteResult,
-} from "../services/apiFacade"; // Assuming API functions for CRUD operations
+import React, { useState } from "react";
+import { Results, Participant, Discipline } from "../Interfaces";
+import { registerResult } from "../services/apiFacade";
 import { toast } from "react-toastify";
-import "../styling/resultForm.css"; // Assuming CSS file for styling
+import "react-toastify/dist/ReactToastify.css";
 
 interface ResultFormProps {
-  participants: Participant[];
   disciplines: Discipline[];
+  participants: Participant[];
 }
 
-export default function ResultForm({
-  participants,
+const ResultForm: React.FC<ResultFormProps> = ({
   disciplines,
-}: ResultFormProps) {
-  const [selectedParticipant, setSelectedParticipant] = useState<number | null>(
-    null
-  );
-  const [selectedDiscipline, setSelectedDiscipline] = useState<number | null>(
-    null
-  );
-  const [results, setResults] = useState<Results[]>([]);
-  const [newResultValue, setNewResultValue] = useState<string>("");
-  const [editMode, setEditMode] = useState<boolean>(false);
-  const [editingResultId, setEditingResultId] = useState<number | null>(null);
+  participants,
+}) => {
+  const [formData, setFormData] = useState<Results>({
+    resultType: "",
+    resultValue: 0,
+    date: "",
+    participant:
+      participants.length > 0
+        ? participants[0]
+        : {
+            id: -1,
+            name: "",
+            age: 0,
+            gender: "",
+            club: "",
+            disciplines: [],
+            results: [],
+          },
+    discipline:
+      disciplines.length > 0
+        ? disciplines[0]
+        : {
+            id: -1,
+            name: "",
+            resultType: "",
+          },
+  });
 
-  useEffect(() => {
-    // Fetch initial results or set initial state as needed
-    // Example:
-    // fetchResults();
-  }, []);
-
-  const handleParticipantChange = (participantId: number) => {
-    setSelectedParticipant(participantId);
-    setResults([]); // Reset results when participant changes
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: name === "resultValue" ? Number(value) : value,
+    }));
   };
 
-  const handleDisciplineChange = (disciplineId: number) => {
-    setSelectedDiscipline(disciplineId);
-    setResults([]); // Reset results when discipline changes
-  };
-
-  const handleResultInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewResultValue(e.target.value);
-  };
-
-  const handleAddResult = async () => {
-    if (!selectedParticipant || !selectedDiscipline || !newResultValue.trim()) {
-      toast.error(
-        "Please select participant, discipline, and enter a result value."
-      );
-      return;
+  const handleDisciplineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const disciplineId = parseInt(e.target.value);
+    const selectedDiscipline = disciplines.find(
+      (discipline) => discipline.id === disciplineId
+    );
+    if (selectedDiscipline) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        discipline: selectedDiscipline,
+      }));
     }
+  };
+
+  const handleParticipantChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const participantId = parseInt(e.target.value);
+    const selectedParticipant = participants.find(
+      (participant) => participant.id === participantId
+    );
+    if (selectedParticipant) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        participant: selectedParticipant,
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     try {
-      // Perform API call to register result
-      const result = await registerResult({
-        participantId: selectedParticipant,
-        disciplineId: selectedDiscipline,
-        resultValue: newResultValue.trim(),
+      const savedResult = await registerResult(formData);
+      setFormData({
+        resultType: "",
+        resultValue: 0,
+        date: "",
+        participant:
+          participants.length > 0
+            ? participants[0]
+            : {
+                id: -1,
+                name: "",
+                age: 0,
+                gender: "",
+                club: "",
+                disciplines: [],
+                results: [],
+              },
+        discipline:
+          disciplines.length > 0
+            ? disciplines[0]
+            : {
+                id: -1,
+                name: "",
+                resultType: "",
+              },
       });
-
-      setResults([...results, result]);
-      setNewResultValue("");
-      toast.success("Result registered successfully!");
+      toast.success("Result saved successfully");
     } catch (error) {
-      toast.error("Failed to register result. Please try again.");
-      console.error("Error:", error);
-    }
-  };
-
-  const handleEditResult = async (resultId: number, newValue: string) => {
-    try {
-      // Perform API call to update result
-      const updatedResult = await updateResult(resultId, {
-        resultValue: newValue,
-      });
-
-      setResults(
-        results.map((result) =>
-          result.id === resultId ? updatedResult : result
-        )
-      );
-      setEditMode(false);
-      setEditingResultId(null);
-      toast.success("Result updated successfully!");
-    } catch (error) {
-      toast.error("Failed to update result. Please try again.");
-      console.error("Error:", error);
-    }
-  };
-
-  const handleDeleteResult = async (resultId: number) => {
-    try {
-      // Perform API call to delete result
-      await deleteResult(resultId);
-
-      setResults(results.filter((result) => result.id !== resultId));
-      toast.success("Result deleted successfully!");
-    } catch (error) {
-      toast.error("Failed to delete result. Please try again.");
-      console.error("Error:", error);
+      console.error("Error saving result:", error);
+      toast.error("Failed to save result");
     }
   };
 
   return (
     <div className="result-form">
       <h2>Result Management</h2>
-
-      {/* Participant Selection */}
-      <select
-        value={selectedParticipant || ""}
-        onChange={(e) => handleParticipantChange(parseInt(e.target.value))}
-      >
-        <option value="">Select Participant</option>
-        {participants.map((participant) => (
-          <option key={participant.id} value={participant.id}>
-            {participant.name}
-          </option>
-        ))}
-      </select>
-
-      {/* Discipline Selection */}
-      <select
-        value={selectedDiscipline || ""}
-        onChange={(e) => handleDisciplineChange(parseInt(e.target.value))}
-      >
-        <option value="">Select Discipline</option>
-        {disciplines.map((discipline) => (
-          <option key={discipline.id} value={discipline.id}>
-            {discipline.name}
-          </option>
-        ))}
-      </select>
-
-      {/* Result Input */}
-      <div className="result-input">
+      <form onSubmit={handleSubmit}>
+        <select
+          name="participant"
+          value={formData.participant.id}
+          onChange={handleParticipantChange}
+        >
+          {participants.map((participant) => (
+            <option key={participant.id} value={participant.id}>
+              {participant.name}
+            </option>
+          ))}
+        </select>
         <input
           type="text"
-          value={newResultValue}
-          onChange={handleResultInputChange}
-          placeholder="Enter result value"
+          name="resultType"
+          value={formData.resultType}
+          onChange={handleChange}
+          placeholder="Result Type"
         />
-        {!editMode ? (
-          <button onClick={handleAddResult}>Add Result</button>
-        ) : (
-          <button
-            onClick={() => handleEditResult(editingResultId!, newResultValue)}
-          >
-            Save Changes
-          </button>
-        )}
-      </div>
+        <input
+          type="number"
+          name="resultValue"
+          value={formData.resultValue}
+          onChange={handleChange}
+          placeholder="Result Value"
+        />
+        <input
+          type="date"
+          name="date"
+          value={formData.date}
+          onChange={handleChange}
+        />
+        <select
+          name="discipline"
+          value={formData.discipline.id}
+          onChange={handleDisciplineChange}
+        >
+          {disciplines.map((discipline) => (
+            <option key={discipline.id} value={discipline.id}>
+              {discipline.name}
+            </option>
+          ))}
+        </select>
 
-      {/* Results List */}
-      <div className="results-list">
-        {results.map((result) => (
-          <div key={result.id} className="result-item">
-            <span>{result.resultValue}</span>
-            <button
-              onClick={() => {
-                setEditMode(true);
-                setEditingResultId(result.id);
-                setNewResultValue(result.resultValue);
-              }}
-            >
-              Edit
-            </button>
-            <button onClick={() => handleDeleteResult(result.id)}>
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
+        <button type="submit">Submit Result</button>
+      </form>
     </div>
   );
-}
+};
+
+export default ResultForm;

@@ -13,7 +13,7 @@ interface Results {
     resultType: string;
     date: string;
     resultValue: number;
-    discipline: string[];
+    discipline: Discipline;
     participant: Participant;
 }
 
