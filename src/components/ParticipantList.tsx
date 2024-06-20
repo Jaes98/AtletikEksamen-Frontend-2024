@@ -1,10 +1,34 @@
 import { Participant } from "../Interfaces";
+import { deleteParticipant } from "../services/apiFacade";
+import { toast } from "react-toastify";
 
 interface ParticipantListProps {
   participants: Participant[];
+  setParticipants: React.Dispatch<React.SetStateAction<Participant[]>>;
+    onEdit: (participant: Participant) => void;
 }
 
-const ParticipantList: React.FC<ParticipantListProps> = ({ participants }) => {
+export default function ParticipantList({ participants, setParticipants, onEdit }: ParticipantListProps) {
+
+    const handleDelete = async (id: number | undefined) => {
+      if (id === undefined) {
+        console.error("Cannot delete participant: id is undefined");
+        return;
+      }
+
+      try {
+        await deleteParticipant(id);
+        setParticipants(participants.filter((participant) => participant.id !== id));
+        toast.success("Participant deleted successfully");
+      } catch (error) {
+        toast.error("Could not delete participant, something went wrong.");
+        console.error(error);
+      }
+    };
+    const handleEdit = async (participant: Participant) => {
+      onEdit(participant);
+      window.scrollTo(0, 0);
+    };
     
   return (
     <div className="product-list-page">
@@ -58,5 +82,3 @@ const ParticipantList: React.FC<ParticipantListProps> = ({ participants }) => {
     </div>
   );
 };
-
-export default ParticipantList;

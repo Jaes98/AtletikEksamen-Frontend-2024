@@ -29,6 +29,8 @@ export default function ParticipantPage () {
         <ParticipantForm />
         <ParticipantList
           participants={participants}
+          setParticipants={setParticipants}
+            onEdit={(participant) => console.log(participant)}
         />
       </div>
     );
