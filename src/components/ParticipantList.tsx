@@ -1,23 +1,33 @@
-import { Participant } from "../Interfaces";
+import { useState, useEffect } from "react";
+import { Participant, Discipline } from "../Interfaces";
 import { deleteParticipant } from "../services/apiFacade";
 import { toast } from "react-toastify";
-import { useState } from "react";
-import "../styling/modalview.css"
+import "../styling/modalview.css";
 
 interface ParticipantListProps {
   participants: Participant[];
   setParticipants: React.Dispatch<React.SetStateAction<Participant[]>>;
   onEdit: (participant: Participant) => void;
+  disciplines: Discipline[]; // Prop containing all disciplines
 }
 
-export default function ParticipantList({
-  participants,
-  setParticipants,
-  onEdit,
-}: ParticipantListProps) {
+function ParticipantList(props: ParticipantListProps) {
+  const { participants, setParticipants, onEdit, disciplines } = props;
   const [showModal, setShowModal] = useState(false);
   const [selectedParticipant, setSelectedParticipant] =
     useState<Participant | null>(null);
+  const [filteredParticipants, setFilteredParticipants] = useState<
+    Participant[]
+  >([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [genderFilter, setGenderFilter] = useState<string | null>(null);
+  const [disciplineFilter, setDisciplineFilter] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  useEffect(() => {
+    setFilteredParticipants(participants);
+  }, [participants]);
 
   const openModal = (participant: Participant) => {
     setSelectedParticipant(participant);
@@ -40,7 +50,7 @@ export default function ParticipantList({
       setParticipants(
         participants.filter((participant) => participant.id !== id)
       );
-      toast.success("Participant deleted successfully");
+      toast.success(`Participant deleted successfully`);
     } catch (error) {
       toast.error("Could not delete participant, something went wrong.");
       console.error(error);
@@ -52,22 +62,149 @@ export default function ParticipantList({
     window.scrollTo(0, 0);
   };
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    filterParticipants(
+      e.target.value,
+      genderFilter,
+      disciplineFilter,
+      sortBy,
+      sortOrder
+    );
+  };
+
+  const handleGenderFilterChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = e.target.value;
+    setGenderFilter(value === "all" ? null : value);
+    filterParticipants(
+      searchTerm,
+      value === "all" ? null : value,
+      disciplineFilter,
+      sortBy,
+      sortOrder
+    );
+  };
+
+  const handleDisciplineFilterChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = e.target.value;
+    setDisciplineFilter(value === "all" ? null : value);
+    filterParticipants(
+      searchTerm,
+      genderFilter,
+      value === "all" ? null : value,
+      sortBy,
+      sortOrder
+    );
+  };
+
+  const handleSort = (sortByField: string) => {
+    if (sortBy === sortByField) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(sortByField);
+      setSortOrder("asc");
+    }
+
+    filterParticipants(
+      searchTerm,
+      genderFilter,
+      disciplineFilter,
+      sortByField,
+      sortOrder === "asc" ? "asc" : "desc"
+    );
+  };
+
+  const filterParticipants = (
+    searchTerm: string,
+    gender: string | null,
+    discipline: string | null,
+    sortByField: string | null,
+    sortOrder: "asc" | "desc"
+  ) => {
+    let filteredList = participants.filter((participant) =>
+      participant.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (gender) {
+      filteredList = filteredList.filter(
+        (participant) =>
+          participant.gender.toLowerCase() === gender.toLowerCase()
+      );
+    }
+
+    if (discipline) {
+      filteredList = filteredList.filter((participant) =>
+        participant.disciplines.some(
+          (d) => d.name.toLowerCase() === discipline.toLowerCase()
+        )
+      );
+    }
+
+    if (sortByField) {
+      filteredList.sort((a, b) => {
+        const aValue = a[sortByField as keyof Participant];
+        const bValue = b[sortByField as keyof Participant];
+
+        if (aValue !== undefined && bValue !== undefined) {
+          if (sortOrder === "asc") {
+            return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+          } else {
+            return bValue < aValue ? -1 : bValue > aValue ? 1 : 0;
+          }
+        }
+        return 0;
+      });
+    }
+
+    setFilteredParticipants(filteredList);
+  };
+
   return (
     <div className="participants-list-page">
       <h2 className="participants-header">Participants</h2>
+
+      {/* Search Bar */}
+      <input
+        type="text"
+        placeholder="Search by name..."
+        value={searchTerm}
+        onChange={handleSearch}
+      />
+
+      {/* Gender Filter Select */}
+      <select onChange={handleGenderFilterChange}>
+        <option value="all">All Genders</option>
+        <option value="female">Female</option>
+        <option value="male">Male</option>
+      </select>
+
+      {/* Discipline Filter Select */}
+      <select onChange={handleDisciplineFilterChange}>
+        <option value="all">All Disciplines</option>
+        {disciplines.map((discipline) => (
+          <option key={discipline.id} value={discipline.name}>
+            {discipline.name}
+          </option>
+        ))}
+      </select>
+
       <table className="participants-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Gender</th>
-            <th>Club</th>
-            <th>Discipline Type</th>
+            <th onClick={() => handleSort("name")}>Name</th>
+            <th onClick={() => handleSort("age")}>Age</th>
+            <th onClick={() => handleSort("gender")}>Gender</th>
+            <th onClick={() => handleSort("club")}>Club</th>
+            <th onClick={() => handleSort("disciplines")}>Discipline Type</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {participants.map((participant) => (
+          {filteredParticipants.map((participant) => (
             <tr key={participant.id}>
               <td>{participant.name}</td>
               <td>{participant.age}</td>
@@ -125,8 +262,8 @@ export default function ParticipantList({
                       ? "seconds"
                       : result.resultType === "Distance"
                       ? "meters"
-                      : result.resultType === "Height" ?
-                        "meters"
+                      : result.resultType === "Height"
+                      ? "meters"
                       : ""}
                   </>
                 </li>
@@ -144,3 +281,5 @@ export default function ParticipantList({
     </div>
   );
 }
+
+export default ParticipantList;

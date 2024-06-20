@@ -1,4 +1,5 @@
 import ResultList from "../components/ResultList";
+import Resultform from "../components/ResultForm";
 import { getResults } from "../services/apiFacade";
 import { useEffect, useState } from "react";
 import { Results } from "../Interfaces";
@@ -28,12 +29,21 @@ export default function ResultPage() {
     };
 
     return (
-      <div>
+      <div
+        style={{
+          display: "flex",
+          margin: "1rem",
+          padding: "1vw",
+          gap: "2vw",
+          justifyContent: "space-evenly",
+        }}
+      >
         <ResultList
           results={results}
           setResults={setResults}
           onEdit={handleResultEdit}
         />
+        <Resultform />
       </div>
     );
 };
