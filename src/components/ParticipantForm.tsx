@@ -31,14 +31,16 @@ export default function ParticipantForm({ participant, onSubmit }: ParticipantFo
       setFormData(participant || defaultFormObj);
     }, [participant]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
       e.preventDefault();
-    //   if (
-    //     participant.name === "" ||
-    //     selectedParticipant.age === 0 ||
-    //     selectedParticipant.species === ""
-    //   )
-    //     return setErrorMessage("Please fill out all fields");
+      //   if (
+      //     participant.name === "" ||
+      //     selectedParticipant.age === 0 ||
+      //     selectedParticipant.species === ""
+      //   )
+      //     return setErrorMessage("Please fill out all fields");
       try {
         let savedParticipant;
         if (formData.id) {

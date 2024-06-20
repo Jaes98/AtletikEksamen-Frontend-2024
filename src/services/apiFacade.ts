@@ -1,10 +1,14 @@
-import { Participant } from "../Interfaces";
+import { Participant, Results } from "../Interfaces";
 
 const API_URL = "http://localhost:8080";
 
 
 async function getParticipants(): Promise<Array<Participant>> {
   return fetch(API_URL + "/participants").then(handleHttpErrors);
+}
+
+async function getParticipantById(id: number): Promise<Participant> {
+  return fetch(API_URL + "/participants/" + id).then(handleHttpErrors);
 }
 
 async function createParticipant(participant: Participant) {
@@ -23,9 +27,30 @@ async function updateParticipant(id: number, participant: Participant) {
   return fetch(`${API_URL}/participants/${id}`, options).then(handleHttpErrors);
 }
 
-async function getParticipantById(id: number): Promise<Participant> {
-    return fetch(API_URL + "/participants/" + id).then(handleHttpErrors);
+async function getResults(): Promise<Array<Results>> {
+    return fetch(API_URL + "/results").then(handleHttpErrors);
     }
+
+async function createResult(result: Results) {
+    const options = makeOptions("POST", result);
+    return fetch(API_URL + "/results", options).then(handleHttpErrors);
+    }
+
+async function deleteResult(id: number) {
+    const options = makeOptions("DELETE", null);
+    const response = await fetch(API_URL + "/results/" + id, options);
+    return response.status;
+}
+
+async function createMultipleResults(results: Results[]) {
+    const options = makeOptions("POST", results);
+    return fetch(API_URL + "/results/multiple", options).then(handleHttpErrors);
+}
+
+async function updateResult(id: number, result: Results) {
+    const options = makeOptions("PUT", result);
+    return fetch(`${API_URL}/results/${id}`, options).then(handleHttpErrors);
+}
 
 function makeOptions(method: string, body: object | null): RequestInit {
   const opts: RequestInit = {

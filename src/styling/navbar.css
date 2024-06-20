@@ -31,10 +31,6 @@
     display: flex;
 }
 
-.navbar-logo {
-    margin-right: auto;
-}
-
 .navbar-items {
     overflow-x: auto;
     white-space: nowrap;
