@@ -18,7 +18,7 @@ interface Results {
 }
 
 interface Discipline {
-    id?: number;
+    id: number;
     name: string;
     resultType: string;
 }

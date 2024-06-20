@@ -1,4 +1,4 @@
-import { Participant, Results } from "../Interfaces";
+import { Participant, Results, Discipline } from "../Interfaces";
 
 const API_URL = "http://localhost:8080";
 
@@ -52,6 +52,10 @@ async function updateResult(id: number, result: Results) {
     return fetch(`${API_URL}/results/${id}`, options).then(handleHttpErrors);
 }
 
+async function getDisciplines(): Promise<Array<Discipline>> {
+    return fetch(API_URL + "/disciplines").then(handleHttpErrors);
+    }
+
 function makeOptions(method: string, body: object | null): RequestInit {
   const opts: RequestInit = {
     method: method,
@@ -78,4 +82,4 @@ async function handleHttpErrors(res: Response) {
   return res.json();
 }
 
-export { getParticipants, createParticipant, deleteParticipant, updateParticipant, getParticipantById };
+export { getParticipants, createParticipant, deleteParticipant, updateParticipant, getParticipantById, getResults, createResult, deleteResult, createMultipleResults, updateResult, getDisciplines};
