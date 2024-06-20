@@ -42,7 +42,7 @@ async function deleteResult(id: number) {
     return response.status;
 }
 
-async function createMultipleResults(results: Results[]) {
+async function registerMultipleResults(results: Results[]) {
     const options = makeOptions("POST", results);
     return fetch(API_URL + "/results/multiple", options).then(handleHttpErrors);
 }
@@ -82,4 +82,4 @@ async function handleHttpErrors(res: Response) {
   return res.json();
 }
 
-export { getParticipants, createParticipant, deleteParticipant, updateParticipant, getParticipantById, getResults, registerResult, deleteResult, createMultipleResults, updateResult, getDisciplines};
+export { getParticipants, createParticipant, deleteParticipant, updateParticipant, getParticipantById, getResults, registerResult, deleteResult, registerMultipleResults as createMultipleResults, updateResult, getDisciplines};
