@@ -52,7 +52,7 @@ export default function ResultList({
           {results.map((result) => (
             <tr key={result.id}>
               <td>{result.participant.name}</td>
-            <td>{result.resultValue} {result.resultType === "Track" ? "seconds" : result.resultType === "Field" ? "meters" : ""}</td>
+            <td>{result.resultValue} {result.resultType === "Time" ? "seconds" : result.resultType === "Distance" ? "meters" : ""}</td>
               <td>{new Date(result.date).toLocaleDateString()}</td>
               <td>
                 <button
