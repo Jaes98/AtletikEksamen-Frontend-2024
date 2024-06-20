@@ -1,42 +1,56 @@
-const readData = async () => {
-  const response = await fetch("http://localhost:8080/animals");
-  const data = await response.json();
-  console.log(data);
+import { Participant } from "../Interfaces";
 
-  setAnimalData(data);
-};
+const API_URL = "http://localhost:8080";
 
-const createData = async () => {
-  const response = await fetch("http://localhost:8080/animals", {
-    method: "POST",
+
+async function getParticipants(): Promise<Array<Participant>> {
+  return fetch(API_URL + "/participants").then(handleHttpErrors);
+}
+
+async function createParticipant(participant: Participant) {
+  const options = makeOptions("POST", participant);
+  return fetch(API_URL + "/participants", options).then(handleHttpErrors);
+}
+
+async function deleteParticipant(id: number) {
+  const options = makeOptions("DELETE", null);
+  const response = await fetch(API_URL + "/participants/" + id, options);
+  return response.status;
+}
+
+async function updateParticipant(id: number, participant: Participant) {
+  const options = makeOptions("PUT", participant);
+  return fetch(`${API_URL}/participants/${id}`, options).then(handleHttpErrors);
+}
+
+async function getParticipantById(id: number): Promise<Participant> {
+    return fetch(API_URL + "/participants/" + id).then(handleHttpErrors);
+    }
+
+function makeOptions(method: string, body: object | null): RequestInit {
+  const opts: RequestInit = {
+    method: method,
     headers: {
-      "Content-Type": "application/json",
+      "Content-type": "application/json",
+      Accept: "application/json",
     },
-    body: JSON.stringify(newAnimal),
-  });
-  const data = await response.json();
-  console.log(data);
+  };
+  if (body) {
+    opts.body = JSON.stringify(body);
+  }
+  return opts;
+}
 
-  setNewAnimal({
-    id: 0,
-    name: "",
-    star: false,
-    cutenessFactor: 0,
-    animalType: { id: 0, name: "" },
-    birthdate: "",
-  });
+async function handleHttpErrors(res: Response) {
+  if (!res.ok) {
+    const fullError = await res.json();
+    throw { status: res.status, fullError };
+  }
+  if (res.status === 204) {
+    return {};
+  }
 
-  readData();
-};
+  return res.json();
+}
 
-const deleteData = async (animalId: number) => {
-  const response = await fetch(`http://localhost:8080/animals/${animalId}`, {
-    method: "DELETE",
-  });
-  const data = await response.json();
-  console.log(data);
-
-  readData();
-};
-
-export { readData, createData, deleteData };
+export { getParticipants, createParticipant, deleteParticipant, updateParticipant, getParticipantById };

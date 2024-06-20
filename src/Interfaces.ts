@@ -1,14 +1,26 @@
-interface Animal {
+interface Participant {
   id: number;
   name: string;
-  star: boolean;
-  cutenessFactor: number;
-  animalType: animalType;
-  birthdate: string;
-}
-interface animalType {
-  id: number;
-  name: string;
+  gender: string;
+  age: number;
+  club: string;
+  results: Array<Results>;
+  disciplines: Array<Discipline>;
 }
 
-export type { Animal, animalType };
+interface Results {
+    id: number;
+    resultType: string;
+    date: string;
+    resultValue: number;
+    discipline: string[];
+    participant: Participant;
+}
+
+interface Discipline {
+    id: number;
+    name: string;
+    resultType: string;
+}
+
+export type { Participant, Results, Discipline};
