@@ -53,13 +53,12 @@ export default function ResultPage() {
         }}
       >
         <Resultform
-        // onSubmit={handleResultSubmit} 
         participants={participants} 
-        // results={selectedResult}
         disciplines={disciplines} />
 
         <ResultList
           results={results}
+          disciplines={disciplines}
           setResults={setResults}
           onEdit={handleResultEdit}
         />

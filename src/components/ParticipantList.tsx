@@ -8,7 +8,7 @@ interface ParticipantListProps {
   participants: Participant[];
   setParticipants: React.Dispatch<React.SetStateAction<Participant[]>>;
   onEdit: (participant: Participant) => void;
-  disciplines: Discipline[]; // Prop containing all disciplines
+  disciplines: Discipline[];
 }
 
 function ParticipantList(props: ParticipantListProps) {
