@@ -22,6 +22,14 @@ const ResultList: React.FC<ResultListProps> = ({
   );
   const [selectedGender, setSelectedGender] = useState<string>("");
 
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: string;
+  }>({
+    key: "",
+    direction: "",
+  });
+
   const handleDelete = async (id: number | undefined) => {
     if (id === undefined) {
       console.error("Cannot delete result: id is undefined");
@@ -43,23 +51,43 @@ const ResultList: React.FC<ResultListProps> = ({
     window.scrollTo(0, 0);
   };
 
-  // Filter and sort results
-  const filteredResults = results
+  const requestSort = (key: string) => {
+    let direction = "ascending";
+    if (
+      sortConfig &&
+      sortConfig.key === key &&
+      sortConfig.direction === "ascending"
+    ) {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedResults = [...results].sort((a, b) => {
+    if (sortConfig.direction === "ascending") {
+      return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
+    }
+    if (sortConfig.direction === "descending") {
+      return a[sortConfig.key] < b[sortConfig.key] ? 1 : -1;
+    }
+    return 0;
+  });
+
+  const getClassNamesFor = (name: string) => {
+    if (!sortConfig) {
+      return;
+    }
+    return sortConfig.key === name ? sortConfig.direction : undefined;
+  };
+
+  // Filter results based on selected discipline and gender
+  const filteredResults = sortedResults
     .filter((result) =>
       selectedDiscipline ? result.discipline.id === selectedDiscipline : true
     )
     .filter((result) =>
       selectedGender ? result.participant.gender === selectedGender : true
-    )
-    .sort((a, b) => {
-      if (a.resultType === "Time") {
-        return a.resultValue - b.resultValue;
-      } else if (a.resultType === "Distance") {
-        return b.resultValue - a.resultValue; 
-      } else {
-        return 0;
-      }
-    });
+    );
 
   return (
     <div className="results-list-page">
@@ -99,10 +127,42 @@ const ResultList: React.FC<ResultListProps> = ({
       <table className="results-table">
         <thead>
           <tr>
-            <th>Participant Name</th>
-            <th>Event</th>
-            <th>Score</th>
-            <th>Date</th>
+            <th onClick={() => requestSort("participant.name")}>
+              Participant Name{" "}
+              {getClassNamesFor("participant.name") === "ascending" && (
+                <span className="sort-indicator">&#9650;</span>
+              )}
+              {getClassNamesFor("participant.name") === "descending" && (
+                <span className="sort-indicator">&#9660;</span>
+              )}
+            </th>
+            <th onClick={() => requestSort("discipline.name")}>
+              Event{" "}
+              {getClassNamesFor("discipline.name") === "ascending" && (
+                <span className="sort-indicator">&#9650;</span>
+              )}
+              {getClassNamesFor("discipline.name") === "descending" && (
+                <span className="sort-indicator">&#9660;</span>
+              )}
+            </th>
+            <th onClick={() => requestSort("resultValue")}>
+              Score{" "}
+              {getClassNamesFor("resultValue") === "ascending" && (
+                <span className="sort-indicator">&#9650;</span>
+              )}
+              {getClassNamesFor("resultValue") === "descending" && (
+                <span className="sort-indicator">&#9660;</span>
+              )}
+            </th>
+            <th onClick={() => requestSort("date")}>
+              Date{" "}
+              {getClassNamesFor("date") === "ascending" && (
+                <span className="sort-indicator">&#9650;</span>
+              )}
+              {getClassNamesFor("date") === "descending" && (
+                <span className="sort-indicator">&#9660;</span>
+              )}
+            </th>
             <th>Actions</th>
           </tr>
         </thead>

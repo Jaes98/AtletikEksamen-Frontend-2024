@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Participant, Discipline } from "../Interfaces";
 import { deleteParticipant } from "../services/apiFacade";
 import { toast } from "react-toastify";
@@ -65,7 +65,7 @@ function ParticipantList(props: ParticipantListProps) {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     filterParticipants(
-      e.target.value,
+      searchTerm,
       genderFilter,
       disciplineFilter,
       sortBy,
@@ -163,6 +163,13 @@ function ParticipantList(props: ParticipantListProps) {
     setFilteredParticipants(filteredList);
   };
 
+  const getClassNamesFor = (name: string) => {
+    if (!sortBy) {
+      return;
+    }
+    return sortBy === name ? sortOrder : undefined;
+  };
+
   return (
     <div className="participants-list-page">
       <h2 className="participants-header">Participants</h2>
@@ -195,11 +202,51 @@ function ParticipantList(props: ParticipantListProps) {
       <table className="participants-table">
         <thead>
           <tr>
-            <th onClick={() => handleSort("name")}>Name</th>
-            <th onClick={() => handleSort("age")}>Age</th>
-            <th onClick={() => handleSort("gender")}>Gender</th>
-            <th onClick={() => handleSort("club")}>Club</th>
-            <th onClick={() => handleSort("disciplines")}>Discipline Type</th>
+            <th onClick={() => handleSort("name")}>
+              Name{" "}
+              {getClassNamesFor("name") === "asc" && (
+                <span className="sort-indicator">&#9650;</span>
+              )}
+              {getClassNamesFor("name") === "desc" && (
+                <span className="sort-indicator">&#9660;</span>
+              )}
+            </th>
+            <th onClick={() => handleSort("age")}>
+              Age{" "}
+              {getClassNamesFor("age") === "asc" && (
+                <span className="sort-indicator">&#9650;</span>
+              )}
+              {getClassNamesFor("age") === "desc" && (
+                <span className="sort-indicator">&#9660;</span>
+              )}
+            </th>
+            <th onClick={() => handleSort("gender")}>
+              Gender{" "}
+              {getClassNamesFor("gender") === "asc" && (
+                <span className="sort-indicator">&#9650;</span>
+              )}
+              {getClassNamesFor("gender") === "desc" && (
+                <span className="sort-indicator">&#9660;</span>
+              )}
+            </th>
+            <th onClick={() => handleSort("club")}>
+              Club{" "}
+              {getClassNamesFor("club") === "asc" && (
+                <span className="sort-indicator">&#9650;</span>
+              )}
+              {getClassNamesFor("club") === "desc" && (
+                <span className="sort-indicator">&#9660;</span>
+              )}
+            </th>
+            <th onClick={() => handleSort("disciplines")}>
+              Discipline Type{" "}
+              {getClassNamesFor("disciplines") === "asc" && (
+                <span className="sort-indicator">&#9650;</span>
+              )}
+              {getClassNamesFor("disciplines") === "desc" && (
+                <span className="sort-indicator">&#9660;</span>
+              )}
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
