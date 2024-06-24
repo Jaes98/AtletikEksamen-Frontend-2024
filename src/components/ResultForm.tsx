@@ -8,11 +8,13 @@ import "../styling/resultform.css";
 interface ResultFormProps {
   disciplines: Discipline[];
   participants: Participant[];
+    onSubmit: () => void;
 }
 
 const ResultForm: React.FC<ResultFormProps> = ({
   disciplines,
   participants,
+  onSubmit,
 }) => {
   const [formData, setFormData] = useState<Results>({
     resultType: "",
@@ -106,6 +108,7 @@ const ResultForm: React.FC<ResultFormProps> = ({
                 resultType: "",
               },
       });
+       onSubmit();
       toast.success("Result saved successfully");
     } catch (error) {
       console.error("Error saving result:", error);

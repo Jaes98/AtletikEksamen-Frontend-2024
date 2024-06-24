@@ -32,10 +32,9 @@ export default function ResultPage() {
       fetchDisciplines();
     }, []);
 
-    // const handleResultSubmit = () => {
-    //   setSelectedResult(null);
-    //   fetchResults();
-    // };
+    const handleResultSubmit = () => {
+      fetchResults();
+    };
 
     const handleResultEdit = (result: Results) => {
       setSelectedResult(result);
@@ -54,7 +53,8 @@ export default function ResultPage() {
       >
         <Resultform
         participants={participants} 
-        disciplines={disciplines} />
+        disciplines={disciplines}
+        onSubmit={handleResultSubmit} />
 
         <ResultList
           results={results}

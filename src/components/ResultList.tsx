@@ -181,12 +181,12 @@ const ResultList: React.FC<ResultListProps> = ({
               </td>
               <td>{new Date(result.date).toLocaleDateString()}</td>
               <td>
-                <button
+                {/* <button
                   className="edit-button"
                   onClick={() => handleEdit(result)}
                 >
                   Edit
-                </button>
+                </button> */}
                 <button
                   className="delete-button"
                   onClick={() => handleDelete(result.id)}
