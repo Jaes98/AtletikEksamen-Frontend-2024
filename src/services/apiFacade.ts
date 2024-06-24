@@ -56,6 +56,16 @@ async function getDisciplines(): Promise<Array<Discipline>> {
     return fetch(API_URL + "/disciplines").then(handleHttpErrors);
     }
 
+async function createDiscipline(discipline: Discipline) {
+    const options = makeOptions("POST", discipline);
+    return fetch(API_URL + "/disciplines", options).then(handleHttpErrors);
+}
+
+async function updateDiscipline(id: number, discipline: Discipline) {
+    const options = makeOptions("PUT", discipline);
+    return fetch(`${API_URL}/disciplines/${id}`, options).then(handleHttpErrors);
+}
+
 function makeOptions(method: string, body: object | null): RequestInit {
   const opts: RequestInit = {
     method: method,
@@ -82,4 +92,4 @@ async function handleHttpErrors(res: Response) {
   return res.json();
 }
 
-export { getParticipants, createParticipant, deleteParticipant, updateParticipant, getParticipantById, getResults, registerResult, deleteResult, registerMultipleResults as createMultipleResults, updateResult, getDisciplines};
+export { getParticipants, createParticipant, deleteParticipant, updateParticipant, getParticipantById, getResults, registerResult, deleteResult, registerMultipleResults as createMultipleResults, updateResult, getDisciplines, createDiscipline, updateDiscipline};

@@ -8,6 +8,7 @@ export default function NavHeader() {
         <div className="navbar-items">
           <NavLink to="/">Participants</NavLink>
           <NavLink to="/results">Results</NavLink>
+          <NavLink to="/disciplines">Disciplines</NavLink>
         </div>
       </ul>
     </nav>
