@@ -45,9 +45,9 @@ export default function ResultPage() {
       <div
         style={{
           display: "flex",
-          margin: "1rem",
-          padding: "1vw",
-          gap: "2vw",
+          margin: "2rem",
+          padding: "3vw",
+          gap: "45vw",
           justifyContent: "space-evenly",
         }}
       >
